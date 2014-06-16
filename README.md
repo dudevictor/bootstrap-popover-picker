@@ -94,3 +94,4 @@ namespace: `$.fn.pos`, for avoiding other plugin issues.
 - [x] Fix: has-error is not set in component mode
 - [x] Max rows (limit popover height)
 - [x] Filtered search (input accepts regular expressions)
+- [x] Generalize the library (not using font awesome)

@@ -18,48 +18,6 @@
 }
 (function($) {
     'use strict';
-    // List of valid items
-    var defaultSelectableItems = [
-        'angle-double-down', 'angle-double-left', 'angle-double-right', 'angle-double-up',
-        'angle-down', 'angle-left', 'angle-right', 'angle-up'
-    ];
-    var defaults = {
-        maxRows: 6, // if it's exceeded, there will be vertical overflow. this DOES change css.
-        // numCols: this is only orientative for calculating the maxRows overflow. changing this value does no change any CSS.
-        // if you want to have another number of cols, regenerate picker.less file changing the @num_cols variable in variables.less
-        numCols: 4,
-        itemOuterHeight: 62, // this is only for calculation maxRows overflow. this should change suiting your CSS.
-        //
-        title: false, // Popover title (optional) only if specified in the template
-        selected: false, // use this value as the current item and ignore the original
-        defaultValue: false, // use this value as the current item if input or element item is empty
-        placement: 'bottom', // WIP (has some issues with auto and CSS). auto, top, bottom, left, right
-        collision: 'none', // If true, the popover will be repositioned to another position when collapses with the window borders
-        animation: true,
-        //hide picker automatically when a value is picked. it is ignored if mustAccept is not false and the accept button is visible
-        hideOnSelect: false,
-        showFooter: false,
-        searchInFooter: false, // If true, the search will be added to the footer instead of the title
-        mustAccept: false, // only applicable when there's an picker-btn-accept button in the popover footer
-        selectedCustomClass: 'bg-primary', // Appends this class when to the selected item
-        selectableItems: false, // false or array. If is not false or empty array, it will be used instead of defaultSelectableItems
-        input: 'input', // children input selector
-        component: '.input-group-addon', // children component jQuery selector or object, relative to the parent element
-        container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
-        // Plugin templates:
-        templates: {
-            popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
-                    '<div class="popover-title"></div><div class="popover-content"></div></div>',
-            footer: '<div class="popover-footer"></div>',
-            buttons: '<button class="picker-btn picker-btn-cancel btn btn-default btn-sm">Cancel</button>' +
-                    ' <button class="picker-btn picker-btn-accept btn btn-primary btn-sm">Accept</button>',
-            search: '<input type="search" class="form-control picker-search" placeholder="Type to filter" />',
-            picker: '<div class="picker"><div class="picker-items"></div></div>',
-            pickerItem: '<div class="picker-item"><i class="fa"></i></div>',
-        }
-    };
-
-    var _idCounter = 0;
 
     var _helpers = {
         isEmpty: function(val) {
@@ -86,15 +44,12 @@
     };
 
     var Picker = function(element, options) {
-        this._id = _idCounter++;
+        this._id = Picker._idCounter++;
         this.element = $(element).addClass('picker-element');
         this._trigger('pickerCreate');
-        this.options = $.extend(true, {}, defaults, this.element.data(), options);
+        this.options = $.extend({}, Picker.defaultOptions, this.element.data(), options);
+        this.options.templates = $.extend({}, Picker.defaultOptions.templates, this.options.templates);
         this.options.originalPlacement = this.options.placement;
-
-        if ((!$.isArray(this.options.selectableItems)) || (this.options.selectableItems.length === 0)) {
-            this.options.selectableItems = defaultSelectableItems;
-        }
 
         // Picker container element
         this.container = (_helpers.isElement(this.options.container) ? $(this.options.container) : false);
@@ -133,8 +88,6 @@
             this.container.append(this.popover);
         }
 
-        this._calcOverflow();
-
         // Bind events
         this._bindElementEvents();
         this._bindWindowEvents();
@@ -149,7 +102,41 @@
         this._trigger('pickerCreated');
     };
 
-    Picker.pos = $.pos;
+    // Instance identifier counter
+    Picker._idCounter = 0;
+
+    // Default options
+    Picker.defaultOptions = {
+        title: false, // Popover title (optional) only if specified in the template
+        selected: false, // use this value as the current item and ignore the original
+        defaultValue: false, // use this value as the current item if input or element item is empty
+        placement: 'bottom', // WIP (has some issues with auto and CSS). auto, top, bottom, left, right
+        collision: 'none', // If true, the popover will be repositioned to another position when collapses with the window borders
+        animation: true,
+        //hide picker automatically when a value is picked. it is ignored if mustAccept is not false and the accept button is visible
+        hideOnSelect: false,
+        showFooter: false,
+        searchInFooter: false, // If true, the search will be added to the footer instead of the title
+        mustAccept: false, // only applicable when there's an picker-btn-accept button in the popover footer
+        selectedCustomClass: 'bg-primary', // Appends this class when to the selected item
+        // List of valid items
+        items: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
+        input: 'input', // children input selector
+        component: '.input-group-addon', // children component jQuery selector or object, relative to the parent element
+        container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
+        // Plugin templates:
+        templates: {
+            popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
+                    '<div class="popover-title"></div><div class="popover-content"></div></div>',
+            footer: '<div class="popover-footer"></div>',
+            buttons: '<button class="picker-btn picker-btn-cancel btn btn-default btn-sm">Cancel</button>' +
+                    ' <button class="picker-btn picker-btn-accept btn btn-primary btn-sm">Accept</button>',
+            search: '<input type="search" class="form-control picker-search" placeholder="Type to filter" />',
+            picker: '<div class="picker"><div class="picker-items"></div></div>',
+            pickerItem: '<div class="picker-item"><i></i></div>',
+        }
+    };
+
     Picker.batch = function(selector, method) {
         var args = Array.prototype.slice.call(arguments, 2);
         return $(selector).each(function() {
@@ -205,25 +192,13 @@
 
             return this.popover;
         },
-        _calcOverflow: function() {
-            if (this.options.maxRows > 0) {
-                var ln = this.options.selectableItems.length;
-                if ((ln / this.options.numCols) > this.options.maxRows) {
-                    this.popover.addClass('picker-has-overflow');
-                    this.picker.find('.picker-items').css({
-                        'overflow-y': 'auto',
-                        'maxHeight': (this.options.maxRows * this.options.itemOuterHeight) + 'px'
-                    });
-                }
-            }
-        },
-        _createPicker: function(popover) {
+        _createPicker: function() {
             var _self = this;
             this.picker = $(this.options.templates.picker);
 
             var itemClickFn = function(e) {
                 var $this = $(this);
-                if ($this.is('.fa')) {
+                if ($this.is('i')) {
                     $this = $this.parent();
                 }
 
@@ -248,13 +223,12 @@
                 }
             };
 
-            for (var i in this.options.selectableItems) {
+            for (var i in this.options.items) {
                 var itemElement = $(this.options.templates.pickerItem);
-                itemElement.find('.fa').addClass('fa-' + this.options.selectableItems[i]);
-                itemElement.data('pickerValue', this.options.selectableItems[i])
+                itemElement.find('i').html(this.options.items[i]);
+                itemElement.data('pickerValue', this.options.items[i])
                         .on('click.picker', itemClickFn);
-                this.picker.find('.picker-items').append(itemElement
-                        .attr('title', '.' + this.getValue(this.options.selectableItems[i])));
+                this.picker.find('.picker-items').append(itemElement);
             }
 
             this.popover.find('.popover-content').append(this.picker);
@@ -550,14 +524,16 @@
             // Update selected item
             this.picker.find('.picker-item.picker-selected')
                     .removeClass('picker-selected ' + this.options.selectedCustomClass);
-            this.picker.find('.fa.fa-' + this.pickerValue).parent()
-                    .addClass('picker-selected ' + this.options.selectedCustomClass);
+            if (!_helpers.isEmpty(this.pickerValue)) {
+                this.picker.find('.picker-item i:contains(' + this.pickerValue + ')').parent()
+                        .addClass('picker-selected ' + this.options.selectedCustomClass);
+            }
 
             // Update component item
             if (this.hasComponent()) {
                 var icn = this.component.find('i');
                 if (icn.length > 0) {
-                    icn.attr('class', 'fa fa-fw ' + this.getValue());
+                    icn.html(this.getValue());
                 } else {
                     this.component.html(this.getValueHtml());
                 }
@@ -579,14 +555,11 @@
         getValid: function(val) {
             // here we must validate the value (you may change this validation
             // to suit your needs
-
             if (!_helpers.isString(val)) {
                 val = '';
             }
-            // trimmed and sanitized string without the 'fa-' prefix
-            val = $.trim(val.replace('fa-', ''));
 
-            if (_helpers.inArray(val, this.options.selectableItems)) {
+            if (_helpers.inArray(val, this.options.items) || (val === '')) {
                 return val;
             }
             return false;
@@ -616,17 +589,18 @@
          * @returns string
          */
         getValue: function(val) {
-            return 'fa-' + (val ? val : this.pickerValue);
+            // here you may parse your format when you build your plugin
+            return (val ? val : this.pickerValue);
         },
         getValueHtml: function() {
-            return '<i class="fa fa-fw ' + this.getValue() + '"></i>';
+            return '<i>' + this.getValue() + '</i>';
         },
         /**
          * Calls setValue and if it's a valid item value, sets the input or element value
          */
         setSourceValue: function(val) {
             val = this.setValue(val);
-            if (val !== false) {
+            if ((val !== false) && (val !== '')) {
                 if (this.hasInput()) {
                     this.input.val(this.getValue());
                 } else {
@@ -686,7 +660,7 @@
                 var found = [];
                 this.picker.find('.picker-item').each(function() {
                     var $this = $(this);
-                    var text = $this.attr('title').toLowerCase();
+                    var text = $this.text().toLowerCase();
                     var regex = false;
                     try {
                         regex = new RegExp(filterText, 'g');
