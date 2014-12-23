@@ -2,7 +2,7 @@
   "name": "bootstrap-popover-picker",
   "version": "1.0.0",
   "dependencies": {
-    "jquery": "~2.1.1",
+    "jquery": "^1.10",
     "bootstrap": "^3"
   },
   "ignore": [
@@ -17,13 +17,10 @@
     "test",
     "tests"
   ],
-  "homepage": "https://github.com/wangshijun/bootstrap-popover-picker",
+  "homepage": "https://github.com/mjolnic/bootstrap-popover-picker",
   "authors": [
     "Javier Aguilar"
   ],
   "description": "bootstrap-popover-picker",
-  "license": "MIT",
-  "resolutions": {
-    "jquery": "^1.10"
-  }
+  "license": "MIT"
 }
