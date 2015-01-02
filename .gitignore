@@ -8,5 +8,6 @@ Thumbs.db
 /ignored/
 /node_modules/
 /nbproject/
+bower_components
 static_server.js
 *.php
