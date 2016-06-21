@@ -6,6 +6,8 @@ fully customizable with a powerful base API, including jQuery.UI position plugin
 
 [View demos](http://mjolnic.github.io/bootstrap-popover-picker/)
 
+[How to use the plugin without inputs](http://jsfiddle.net/mjolnic/cw5eLpvf/)
+
 ## Instantiation
 
 You can call the plugin in several ways:
@@ -24,6 +26,45 @@ $('.my').data('picker').pickerMethod('methodArg1', 'methodArg2' /* , other args 
 // Call and apply a plugin method to EACH matched element.
 $.picker.batch('.my', 'pickerMethod', 'methodArg1', 'methodArg2' /* , other args */); ->
 ```
+
+## Options
+
+These are the default options
+
+```javascript
+{
+    title: false, // Popover title (optional) only if specified in the template
+    selected: false, // use this value as the current item and ignore the original
+    defaultValue: false, // use this value as the current item if input or element item is empty
+    placement: 'bottom', // WIP (has some issues with auto and CSS). auto, top, bottom, left, right
+    collision: 'none', // If true, the popover will be repositioned to another position when collapses with the window borders
+    animation: true,
+    //hide picker automatically when a value is picked. it is ignored if mustAccept is not false and the accept button is visible
+    hideOnSelect: false,
+    showFooter: false,
+    searchInFooter: false, // If true, the search will be added to the footer instead of the title
+    mustAccept: false, // only applicable when there's an picker-btn-accept button in the popover footer
+    selectedCustomClass: 'bg-primary', // Appends this class when to the selected item
+    // List of valid items
+    items: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
+    input: 'input', // children input selector (you can change this to anything even if it's not an input)
+    component: '.input-group-addon', // children component selector or object, relative to the parent element
+    container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
+    updateComponentOnChange: true, // If false, it will not update the content in the component
+    // Plugin templates:
+    templates: {
+        popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
+                '<div class="popover-title"></div><div class="popover-content"></div></div>',
+        footer: '<div class="popover-footer"></div>',
+        buttons: '<button class="picker-btn picker-btn-cancel btn btn-default btn-sm">Cancel</button>' +
+                ' <button class="picker-btn picker-btn-accept btn btn-primary btn-sm">Accept</button>',
+        search: '<input type="search" class="form-control picker-search" placeholder="Type to filter" />',
+        picker: '<div class="picker"><div class="picker-items"></div></div>',
+        pickerItem: '<div class="picker-item"><i></i></div>',
+    }
+}
+```
+
 
 ## Triggered Events
 

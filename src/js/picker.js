@@ -24,7 +24,7 @@
             return ((val === false) || (val === '') || (val === null) || (val === undefined));
         },
         isEmptyObject: function(val) {
-            return (this.isEmpty(val) === true) || (val.length === 0);
+            return (this.isEmpty(val) === true) || Object.keys(val).length === 0 && val.constructor === Object
         },
         isElement: function(selector) {
             return ($(selector).length > 0);
@@ -60,7 +60,7 @@
             this.options.placement = 'inline';
         }
 
-        // Is the element an input? Should we search inside for any input?     
+        // Is the element an input? Should we search inside for any input?
         this.input = (this.element.is('input') ? this.element.addClass('picker-input') : false);
         if (this.input === false) {
             this.input = (this.container.find(this.options.input));
@@ -121,9 +121,11 @@
         selectedCustomClass: 'bg-primary', // Appends this class when to the selected item
         // List of valid items
         items: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
+        itemProperty: null, // Defines which property will be accessed to show the value, in case of the items be an array of objects.
         input: 'input', // children input selector
         component: '.input-group-addon', // children component jQuery selector or object, relative to the parent element
         container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
+        updateComponentOnChange: true, // If false, it will not update the content in the component
         // Plugin templates:
         templates: {
             popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
@@ -225,9 +227,11 @@
 
             for (var i in this.options.items) {
                 var itemElement = $(this.options.templates.pickerItem);
-                itemElement.find('i').html(this.options.items[i]);
+                var actualItem = this.options.items[i];
+                var valueToShow = this.options.itemProperty ? actualItem[this.options.itemProperty] : actualItem;
+                itemElement.find('i').html(valueToShow);
                 itemElement.data('pickerValue', this.options.items[i])
-                        .on('click.picker', itemClickFn);
+                    .on('click.picker', itemClickFn);
                 this.picker.find('.picker-items').append(itemElement);
             }
 
@@ -239,7 +243,7 @@
             var _t = $(e.target);
             if ((!_t.hasClass('picker-element')  ||
                     (_t.hasClass('picker-element') && !_t.is(this.element))) &&
-                    (_t.parents('.picker-popover').length === 0)) {
+                (_t.parents('.picker-popover').length === 0)) {
                 return false;
             }
             return true;
@@ -358,7 +362,7 @@
                 my: "right top",
                 // of: Which element to position against.
                 of: this.hasInput() ? this.input : this.container,
-                // collision: When the positioned element overflows the window (or within element) 
+                // collision: When the positioned element overflows the window (or within element)
                 // in some direction, move it to an alternative position.
                 collision: (collision === true ? 'flip' : collision),
                 // within: Element to position within, affecting collision detection.
@@ -523,14 +527,15 @@
         _updateComponents: function() {
             // Update selected item
             this.picker.find('.picker-item.picker-selected')
-                    .removeClass('picker-selected ' + this.options.selectedCustomClass);
-            if (!_helpers.isEmpty(this.pickerValue)) {
-                this.picker.find('.picker-item i:contains(' + this.pickerValue + ')').parent()
-                        .addClass('picker-selected ' + this.options.selectedCustomClass);
+                .removeClass('picker-selected ' + this.options.selectedCustomClass);
+            var valueSelected = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
+            if (!_helpers.isEmpty(valueSelected)) {
+                this.picker.find('.picker-item i:contains(' + valueSelected + ')').parent()
+                    .addClass('picker-selected ' + this.options.selectedCustomClass);
             }
 
             // Update component item
-            if (this.hasComponent()) {
+            if (this.hasComponent() && this.options.updateComponentOnChange) {
                 var icn = this.component.find('i');
                 if (icn.length > 0) {
                     icn.html(this.getValue());
@@ -555,7 +560,8 @@
         getValid: function(val) {
             // here we must validate the value (you may change this validation
             // to suit your needs
-            if (!_helpers.isString(val)) {
+            if (this.options.itemProperty && _helpers.isEmptyObject(val) ||
+                !this.options.itemProperty && !_helpers.isString(val)) {
                 val = '';
             }
 
@@ -590,7 +596,8 @@
          */
         getValue: function(val) {
             // here you may parse your format when you build your plugin
-            return (val ? val : this.pickerValue);
+            var valueInPicker = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
+            return (val ? val : valueInPicker);
         },
         getValueHtml: function() {
             return '<i>' + this.getValue() + '</i>';
@@ -627,6 +634,7 @@
                 val = this.input.val();
             } else {
                 val = this.element.data('pickerValue');
+                val = this.options.itemProperty ? val[this.options.itemProperty] : val;
             }
             if ((val === undefined) || (val === '') || (val === null) || (val === false)) {
                 // if not defined or empty, return default

@@ -109,9 +109,12 @@
 $('.pck-opts').picker({
     title: 'With custom options',
     items: [
-        '♥', '♠', '♣', '♦',
-        '★', '☺', '☼', '♫',
+        { type: 'heart', icon: '♥' }, { type: 'spades', icon: '♠' },
+        { type: 'clubs', icon: '♣' }, { type: 'diamonds', icon: '♦' },
+        { type: 'star', icon: '★' }, { type: 'smile', icon: '☺' },
+        { type: 'sun', icon: '☼' }, {type: 'song', icon: '♫' },
     ],
+    itemProperty: 'icon',
     selectedCustomClass: 'label label-success',
     mustAccept:true,
     placement:'bottomRight',
@@ -182,9 +185,12 @@ $('.pck-opts').picker({
                     $('.pck-opts').picker({
                         title: 'With custom options',
                         items: [
-                            '♥', '♠', '♣', '♦',
-                            '★', '☺', '☼', '♫',
+                            { type: 'heart', icon: '♥' }, { type: 'spades', icon: '♠' },
+                            { type: 'clubs', icon: '♣' }, { type: 'diamonds', icon: '♦' },
+                            { type: 'star', icon: '★' }, { type: 'smile', icon: '☺' },
+                            { type: 'sun', icon: '☼' }, {type: 'song', icon: '♫' }
                         ],
+                        itemProperty: 'icon',
                         selectedCustomClass: 'label label-success',
                         mustAccept: true,
                         placement: 'bottomRight',
