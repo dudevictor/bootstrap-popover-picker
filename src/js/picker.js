@@ -530,8 +530,9 @@
                 .removeClass('picker-selected ' + this.options.selectedCustomClass);
             var valueSelected = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
             if (!_helpers.isEmpty(valueSelected)) {
-                this.picker.find('.picker-item i:contains(' + valueSelected + ')').parent()
-                    .addClass('picker-selected ' + this.options.selectedCustomClass);
+                this.picker.find('.picker-item i').filter(function() {
+                    return $(this).html() == valueSelected;
+                }).parent().addClass('picker-selected ' + this.options.selectedCustomClass);
             }
 
             // Update component item

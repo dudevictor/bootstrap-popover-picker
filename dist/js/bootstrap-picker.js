@@ -773,14 +773,16 @@
         },
         _updateComponents: function() {
             this.picker.find(".picker-item.picker-selected").removeClass("picker-selected " + this.options.selectedCustomClass);
-            var a = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
-            if (!b.isEmpty(a)) {
-                this.picker.find(".picker-item i:contains(" + a + ")").parent().addClass("picker-selected " + this.options.selectedCustomClass);
+            var c = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
+            if (!b.isEmpty(c)) {
+                this.picker.find(".picker-item i").filter(function() {
+                    return a(this).html() == c;
+                }).parent().addClass("picker-selected " + this.options.selectedCustomClass);
             }
             if (this.hasComponent() && this.options.updateComponentOnChange) {
-                var c = this.component.find("i");
-                if (c.length > 0) {
-                    c.html(this.getValue());
+                var d = this.component.find("i");
+                if (d.length > 0) {
+                    d.html(this.getValue());
                 } else {
                     this.component.html(this.getValueHtml());
                 }
