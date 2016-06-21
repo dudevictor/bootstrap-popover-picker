@@ -435,6 +435,7 @@
         input: "input",
         component: ".input-group-addon",
         container: false,
+        updateComponentOnChange: true,
         templates: {
             popover: '<div class="picker-popover popover"><div class="arrow"></div>' + '<div class="popover-title"></div><div class="popover-content"></div></div>',
             footer: '<div class="popover-footer"></div>',
@@ -772,7 +773,7 @@
             if (!b.isEmpty(this.pickerValue)) {
                 this.picker.find(".picker-item i:contains(" + this.pickerValue + ")").parent().addClass("picker-selected " + this.options.selectedCustomClass);
             }
-            if (this.hasComponent()) {
+            if (this.hasComponent() && this.options.updateComponentOnChange) {
                 var a = this.component.find("i");
                 if (a.length > 0) {
                     a.html(this.getValue());

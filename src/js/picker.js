@@ -60,7 +60,7 @@
             this.options.placement = 'inline';
         }
 
-        // Is the element an input? Should we search inside for any input?     
+        // Is the element an input? Should we search inside for any input?
         this.input = (this.element.is('input') ? this.element.addClass('picker-input') : false);
         if (this.input === false) {
             this.input = (this.container.find(this.options.input));
@@ -124,6 +124,7 @@
         input: 'input', // children input selector
         component: '.input-group-addon', // children component jQuery selector or object, relative to the parent element
         container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
+        updateComponentOnChange: true, // If false, it will not update the content in the component
         // Plugin templates:
         templates: {
             popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
@@ -358,7 +359,7 @@
                 my: "right top",
                 // of: Which element to position against.
                 of: this.hasInput() ? this.input : this.container,
-                // collision: When the positioned element overflows the window (or within element) 
+                // collision: When the positioned element overflows the window (or within element)
                 // in some direction, move it to an alternative position.
                 collision: (collision === true ? 'flip' : collision),
                 // within: Element to position within, affecting collision detection.
@@ -530,7 +531,7 @@
             }
 
             // Update component item
-            if (this.hasComponent()) {
+            if (this.hasComponent() && this.options.updateComponentOnChange) {
                 var icn = this.component.find('i');
                 if (icn.length > 0) {
                     icn.html(this.getValue());

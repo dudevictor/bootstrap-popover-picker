@@ -50,6 +50,7 @@ These are the default options
     input: 'input', // children input selector (you can change this to anything even if it's not an input)
     component: '.input-group-addon', // children component selector or object, relative to the parent element
     container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
+    updateComponentOnChange: true, // If false, it will not update the content in the component
     // Plugin templates:
     templates: {
         popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
