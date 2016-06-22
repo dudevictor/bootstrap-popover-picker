@@ -126,6 +126,8 @@
         component: '.input-group-addon', // children component jQuery selector or object, relative to the parent element
         container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
         updateComponentOnChange: true, // If false, it will not update the content in the component
+        pickerItemClass: "picker-item", // Defines the selector class of the picker item
+        itemValueSelector: "i", // Defines the selector of the element that contains the value of an item
         // Plugin templates:
         templates: {
             popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
@@ -229,7 +231,7 @@
                 var itemElement = $(this.options.templates.pickerItem);
                 var actualItem = this.options.items[i];
                 var valueToShow = this.options.itemProperty ? actualItem[this.options.itemProperty] : actualItem;
-                itemElement.find('i').html(valueToShow);
+                itemElement.find(this.options.itemValueSelector).html(valueToShow);
                 itemElement.data('pickerValue', this.options.items[i])
                     .on('click.picker', itemClickFn);
                 this.picker.find('.picker-items').append(itemElement);
@@ -241,7 +243,7 @@
         },
         _isEventInsidePicker: function(e) {
             var _t = $(e.target);
-            if ((!_t.hasClass('picker-element')  ||
+            if ((!_t.hasClass('picker-element') ||
                     (_t.hasClass('picker-element') && !_t.is(this.element))) &&
                 (_t.parents('.picker-popover').length === 0)) {
                 return false;
@@ -526,17 +528,19 @@
         },
         _updateComponents: function() {
             // Update selected item
-            this.picker.find('.picker-item.picker-selected')
+            this.picker.find('.' + this.options.pickerItemClass + '.picker-selected')
                 .removeClass('picker-selected ' + this.options.selectedCustomClass);
             var valueSelected = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
             if (!_helpers.isEmpty(valueSelected)) {
-                this.picker.find('.picker-item i:contains(' + valueSelected + ')').parent()
-                    .addClass('picker-selected ' + this.options.selectedCustomClass);
+                this.picker.find('.' + this.options.pickerItemClass + ' ' +
+                    this.options.itemValueSelector).filter(function() {
+                    return $(this).html() == valueSelected;
+                }).parent().addClass('picker-selected ' + this.options.selectedCustomClass);
             }
 
             // Update component item
             if (this.hasComponent() && this.options.updateComponentOnChange) {
-                var icn = this.component.find('i');
+                var icn = this.component.find(this.options.itemValueSelector);
                 if (icn.length > 0) {
                     icn.html(this.getValue());
                 } else {
@@ -662,11 +666,11 @@
         },
         filter: function(filterText) {
             if (_helpers.isEmpty(filterText)) {
-                this.picker.find('.picker-item').show();
+                this.picker.find('.' + this.options.pickerItemClass).show();
                 return $(false);
             } else {
                 var found = [];
-                this.picker.find('.picker-item').each(function() {
+                this.picker.find('.' + this.options.pickerItemClass).each(function() {
                     var $this = $(this);
                     var text = $this.text().toLowerCase();
                     var regex = false;
@@ -721,7 +725,7 @@
             }
         },
         update: function(val, updateOnlyInternal) {
-            val = (val ? val :  this.getSourceValue(this.pickerValue));
+            val = (val ? val : this.getSourceValue(this.pickerValue));
             // reads the input or element value again and tries to update the plugin
             // fallback to the current selected item value
             this._trigger('pickerUpdate');

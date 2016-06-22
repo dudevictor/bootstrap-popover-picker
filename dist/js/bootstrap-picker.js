@@ -437,6 +437,8 @@
         component: ".input-group-addon",
         container: false,
         updateComponentOnChange: true,
+        pickerItemClass: "picker-item",
+        itemValueSelector: "i",
         templates: {
             popover: '<div class="picker-popover popover"><div class="arrow"></div>' + '<div class="popover-title"></div><div class="popover-content"></div></div>',
             footer: '<div class="popover-footer"></div>',
@@ -521,7 +523,7 @@
                 var e = a(this.options.templates.pickerItem);
                 var f = this.options.items[d];
                 var g = this.options.itemProperty ? f[this.options.itemProperty] : f;
-                e.find("i").html(g);
+                e.find(this.options.itemValueSelector).html(g);
                 e.data("pickerValue", this.options.items[d]).on("click.picker", c);
                 this.picker.find(".picker-items").append(e);
             }
@@ -772,15 +774,17 @@
             return true;
         },
         _updateComponents: function() {
-            this.picker.find(".picker-item.picker-selected").removeClass("picker-selected " + this.options.selectedCustomClass);
-            var a = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
-            if (!b.isEmpty(a)) {
-                this.picker.find(".picker-item i:contains(" + a + ")").parent().addClass("picker-selected " + this.options.selectedCustomClass);
+            this.picker.find("." + this.options.pickerItemClass + ".picker-selected").removeClass("picker-selected " + this.options.selectedCustomClass);
+            var c = this.options.itemProperty ? this.pickerValue[this.options.itemProperty] : this.pickerValue;
+            if (!b.isEmpty(c)) {
+                this.picker.find("." + this.options.pickerItemClass + " " + this.options.itemValueSelector).filter(function() {
+                    return a(this).html() == c;
+                }).parent().addClass("picker-selected " + this.options.selectedCustomClass);
             }
             if (this.hasComponent() && this.options.updateComponentOnChange) {
-                var c = this.component.find("i");
-                if (c.length > 0) {
-                    c.html(this.getValue());
+                var d = this.component.find(this.options.itemValueSelector);
+                if (d.length > 0) {
+                    d.html(this.getValue());
                 } else {
                     this.component.html(this.getValueHtml());
                 }
@@ -876,11 +880,11 @@
         },
         filter: function(c) {
             if (b.isEmpty(c)) {
-                this.picker.find(".picker-item").show();
+                this.picker.find("." + this.options.pickerItemClass).show();
                 return a(false);
             } else {
                 var d = [];
-                this.picker.find(".picker-item").each(function() {
+                this.picker.find("." + this.options.pickerItemClass).each(function() {
                     var b = a(this);
                     var e = b.text().toLowerCase();
                     var f = false;
