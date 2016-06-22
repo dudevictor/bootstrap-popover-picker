@@ -47,10 +47,13 @@ These are the default options
     selectedCustomClass: 'bg-primary', // Appends this class when to the selected item
     // List of valid items
     items: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'],
+    itemProperty: null, // Defines which property will be accessed to show the value, in case of the items be an array of objects.
     input: 'input', // children input selector (you can change this to anything even if it's not an input)
     component: '.input-group-addon', // children component selector or object, relative to the parent element
     container: false, // WIP.  Appends the popover to a specific element. If true, appends to the jQuery element.
     updateComponentOnChange: true, // If false, it will not update the content in the component
+    pickerItemClass: "picker-item",  // Defines the selector class of the picker item,
+    itemValueSelector: "i", // Defines the selector of the element that contains the value of an item
     // Plugin templates:
     templates: {
         popover: '<div class="picker-popover popover"><div class="arrow"></div>' +
